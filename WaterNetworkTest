@@ -1,0 +1,120 @@
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.junit.Test;
+
+
+public class WaterNetworkTest {
+
+	@Test
+	public void testReadCsvFile() {
+		WaterNetwork.setParentChildren();
+		String csvFile="test read.csv";
+		ArrayList<String[]> stringList = WaterNetwork.readCsvFile(csvFile);
+		assertEquals(stringList.size(),12);
+		String[] zones=stringList.get(0);
+		assertEquals(zones[0],"zone name");
+		zones=stringList.get(1);
+		assertEquals(zones.length,1);
+		zones=stringList.get(2);
+		assertEquals(zones[1],"Gush Dan");
+		zones=stringList.get(8);
+		//System.out.println(" zones[2]:" + zones[2]);
+		assertEquals(zones[2],"9");
+	}
+
+	@Test
+	public void testParseZones1() {	
+		WaterNetwork.setParentChildren();
+		ArrayList<String[]> zonesList = new ArrayList<String[]>();
+		String[] line1 = {"zone name", "parent zone name"};
+		zonesList.add(line1);
+		String[] line2 = {"Gush Dan"};
+		zonesList.add(line2);
+		String[] line3 = {"Tel Aviv"};
+		zonesList.add(line3);
+		WaterNetwork.parseZones(zonesList);
+		HashMap<String, ArrayList<String>> parentChildren = WaterNetwork.getParentChildren();
+		assertTrue(parentChildren.isEmpty());
+	}
+	
+	@Test
+	public void testParseZones2() {
+		ArrayList<String[]> zonesList = new ArrayList<String[]>();
+		String[] line1 = {"zone name", "parent zone name"};
+		zonesList.add(line1);
+		String[] line2 = {"Ramat Aviv", "Tel Aviv"};
+		zonesList.add(line2);
+		String[] line3 = {"Hatikva", "Tel Aviv"};
+		zonesList.add(line3);
+		zonesList.add(line3);
+		String[] line4 = {"Amidar",	"Ramat Gan"};
+		zonesList.add(line4);
+		WaterNetwork.parseZones(zonesList);
+		HashMap<String, ArrayList<String>> parentChildren = WaterNetwork.getParentChildren();
+		assertEquals(parentChildren.size(),2);
+		assertTrue(parentChildren.containsKey("Tel Aviv"));
+		ArrayList<String> childrens = parentChildren.get("Tel Aviv");
+		assertEquals(childrens.get(0),"Ramat Aviv");
+		assertEquals(childrens.get(1),"Hatikva");
+		childrens = parentChildren.get("Ramat Gan");
+		assertEquals(childrens.get(0),"Amidar");
+	}
+	@Test
+	public void testParseValues() {
+		WaterNetwork.setParentChildren();
+		ArrayList<String[]> zonesList = new ArrayList<String[]>();
+		String[] line = {"zone name", "parent zone name"};
+		zonesList.add(line);
+		String[] line1 = {"Tel Aviv", "Gush Dan"};
+		zonesList.add(line1);
+		String[] line2 = {"Hatikva", "Tel Aviv"};
+		zonesList.add(line2);
+		String[] line3 = {"Ramat Aviv", "Tel Aviv"};
+		zonesList.add(line3);
+		WaterNetwork.parseZones(zonesList);
+		ArrayList<String[]> valuesList = new ArrayList<String[]>();
+		String[] line4 = {"supply", "date", "supply (Ml/d)"};
+		valuesList.add(line4);
+		String[] line5 = {"Tel Aviv", "01/01/2014", "10"};
+		valuesList.add(line5);
+		String[] line6 = {"Tel Aviv", "06/01/2014", "9"};
+		valuesList.add(line6);
+		String[] line7 = {"Ramat Aviv", "02/01/2014", "2"};
+		valuesList.add(line7);
+		String[] line8 = {"Hatikva", "02/01/2014", "3"};
+		valuesList.add(line8);
+		String[] line9 = {"Hatikva", "03/01/2014", "8"};
+		valuesList.add(line9);
+		String[] line10 = {"Hatikva", "06/01/2014", "4"};
+		valuesList.add(line10);
+		WaterNetwork.parseValues(valuesList);
+		HashMap<String, int[]> allZonesValues = WaterNetwork.getAllZonesValues();
+		int[] values = allZonesValues.get("Gush Dan");
+		System.out.println("values[1] of gush dan: " + values[1]);
+		assertEquals(values[1],0);
+		values = allZonesValues.get("Ramat Aviv");
+		assertEquals(values[2],2);
+		values = allZonesValues.get("Hatikva");
+		assertEquals(values[6],4);
+	}
+
+	@Test
+	public void testGetChildrenValue() {
+		testParseValues();
+		HashMap<String, ArrayList<String>> parentChildren = WaterNetwork.getParentChildren();
+		ArrayList <String> children = parentChildren.get("Tel Aviv");
+		//all direct children have a value on 02/01
+		int val = WaterNetwork.getChildrenValue(children, 2);
+		assertEquals(val,5);
+		//one direct child has no value on 03/01
+		val = WaterNetwork.getChildrenValue(children, 3);
+		assertEquals(val,0);
+		//all direct children (only Tel Aviv) have a value on 06/01
+		children = parentChildren.get("Gush Dan");
+		val = WaterNetwork.getChildrenValue(children, 6);
+		assertEquals(val,9);
+	}
+
+}
