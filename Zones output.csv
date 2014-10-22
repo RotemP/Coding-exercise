@@ -1,0 +1,78 @@
+zone name	date	value	type
+Tel Aviv	01/01/2014	10	aggregated
+Tel Aviv	02/01/2014	12	aggregated
+Tel Aviv	03/01/2014	10	aggregated
+Tel Aviv	04/01/2014	12	aggregated
+Tel Aviv	05/01/2014	11	aggregated
+Tel Aviv	06/01/2014	13	aggregated
+Tel Aviv	07/01/2014	11	aggregated
+Borochov	01/01/2014	5	actual
+Borochov	02/01/2014	6	actual
+Borochov	03/01/2014	4	actual
+Borochov	04/01/2014	4	actual
+Borochov	05/01/2014	5	actual
+Ramat Gan	02/01/2014	21	aggregated
+Ramat Gan	03/01/2014	21	aggregated
+Ramat Gan	04/01/2014	21	aggregated
+Ramat Gan	05/01/2014	21	aggregated
+Ramat Gan	06/01/2014	21	aggregated
+Ramat Gan	07/01/2014	21	aggregated
+Ramat Hen	01/01/2014	6	actual
+Ramat Hen	02/01/2014	6	actual
+Ramat Hen	03/01/2014	6	actual
+Ramat Hen	04/01/2014	6	actual
+Ramat Hen	05/01/2014	6	actual
+Ramat Hen	06/01/2014	6	actual
+Ramat Hen	07/01/2014	6	actual
+Amidar	01/01/2014	8	actual
+Amidar	02/01/2014	8	actual
+Amidar	03/01/2014	8	actual
+Amidar	04/01/2014	8	actual
+Amidar	05/01/2014	8	actual
+Amidar	06/01/2014	8	actual
+Amidar	07/01/2014	8	actual
+Ramat Aviv	01/01/2014	2	actual
+Ramat Aviv	02/01/2014	2	actual
+Ramat Aviv	03/01/2014	2	actual
+Ramat Aviv	04/01/2014	2	actual
+Ramat Aviv	05/01/2014	3	actual
+Ramat Aviv	06/01/2014	3	actual
+Ramat Aviv	07/01/2014	3	actual
+Hatikva	01/01/2014	3	actual
+Hatikva	02/01/2014	3	actual
+Hatikva	03/01/2014	3	actual
+Hatikva	04/01/2014	3	actual
+Hatikva	05/01/2014	3	actual
+Hatikva	06/01/2014	3	actual
+Hatikva	07/01/2014	3	actual
+TA Center	01/01/2014	4	actual
+TA Center	02/01/2014	5	actual
+TA Center	03/01/2014	4	actual
+TA Center	04/01/2014	5	actual
+TA Center	05/01/2014	4	actual
+TA Center	06/01/2014	5	actual
+TA Center	07/01/2014	4	actual
+Givataim	01/01/2014	10	actual
+Givataim	02/01/2014	11	actual
+Givataim	03/01/2014	10	aggregated
+Givataim	04/01/2014	10	aggregated
+Givataim	05/01/2014	12	aggregated
+Givataim	06/01/2014	9	actual
+Jaffa	01/01/2014	1	actual
+Jaffa	02/01/2014	2	actual
+Jaffa	03/01/2014	1	actual
+Jaffa	04/01/2014	2	actual
+Jaffa	05/01/2014	1	actual
+Jaffa	06/01/2014	2	actual
+Jaffa	07/01/2014	1	actual
+Rambam	03/01/2014	6	actual
+Rambam	04/01/2014	6	actual
+Rambam	05/01/2014	7	actual
+Rambam	06/01/2014	6	actual
+Rambam	07/01/2014	5	actual
+Shenkar	02/01/2014	7	actual
+Shenkar	03/01/2014	7	actual
+Shenkar	04/01/2014	7	actual
+Shenkar	05/01/2014	7	actual
+Shenkar	06/01/2014	7	actual
+Shenkar	07/01/2014	7	actual
