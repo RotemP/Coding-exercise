@@ -1,0 +1,190 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.util.*;
+
+public class WaterNetwork {
+	
+	private static HashMap<String, ArrayList<String>> parentChildren= new HashMap<String, ArrayList<String>>();
+	private static HashMap<String, int[]> allZonesValues= new HashMap<String, int[]>();
+	private static String[] dates = new String[8];
+	
+	public static HashMap<String, ArrayList<String>> getParentChildren(){
+		return parentChildren;
+	}
+	public static HashMap<String, int[]> getAllZonesValues(){
+		return allZonesValues;
+	}
+	public static void setParentChildren(){
+		parentChildren= new HashMap<String, ArrayList<String>>();
+	}
+	public static void setAllZonesValues(){
+		allZonesValues= new HashMap<String, int[]>();
+	}
+	public static ArrayList<String[]> readCsvFile(String csvFile){
+		ArrayList<String[]> stringsList = new ArrayList<String[]>();
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+		try {
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+			    // use comma as separator
+				String[] supplyValues = line.split(cvsSplitBy);
+				stringsList.add(supplyValues);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return stringsList;
+	}	
+	
+	public static void parseZones(ArrayList<String[]> zonesList){
+		//ignore first line
+		for (int i=1; i<zonesList.size();i++){
+			String[] zones=zonesList.get(i);
+			String zoneName = zones[0];
+			//add new zone to hash map
+			if (!allZonesValues.containsKey(zoneName)){
+				int[] values = new int[8];
+				allZonesValues.put(zoneName, values);
+			}
+			//add zone to his parent zone
+			if (zones.length>1){
+				String parentName = zones[1];
+				//add new zone parent to hash map
+				if (!allZonesValues.containsKey(parentName)){
+					int[] values = new int[8];
+					allZonesValues.put(parentName, values);
+				}
+				if (parentChildren.containsKey(parentName)){
+					ArrayList<String> childrens = parentChildren.get(parentName);
+					if (!childrens.contains(zoneName)){
+						childrens.add(zoneName);
+						parentChildren.put(parentName, childrens);
+					}
+				}
+				else{
+					ArrayList<String> childrens = new ArrayList<String>();
+					childrens.add(zoneName);
+					parentChildren.put(parentName, childrens);
+				}
+			}
+		}
+	}
+	
+	public static void parseValues(ArrayList<String[]> valuesList){
+		//ignore first line
+		for (int i=1; i<valuesList.size();i++){
+			String[] supplyValues=valuesList.get(i);
+			String supplyZone = supplyValues[0];
+			String date	= supplyValues[1];
+			int slashIndex = date.indexOf('/');
+			String shortDate = date.substring(0, slashIndex);
+			int dateNum = Integer.parseInt(shortDate);
+			if (dates[dateNum]==null){
+				dates[dateNum]=date;
+			}
+			String supply = supplyValues[2];
+			//if doesn't exist, add new zone to hash map
+			if (!allZonesValues.containsKey(supplyZone)){
+				int[] values = new int[8];
+				allZonesValues.put(supplyZone, values);
+			}
+			//update the hash map values in the relevant date
+			int[] values = allZonesValues.get(supplyZone);
+			values[dateNum]=Integer.parseInt(supply);
+			allZonesValues.put(supplyZone, values);
+		}
+	}
+	
+	public static int getChildrenValue(ArrayList<String> childrens, int date){
+		int sum = 0;
+		int size = childrens.size();
+		for (int i=0; i<size; i++){
+			String child_name = childrens.get(i);
+			int[] values = allZonesValues.get(child_name);
+			if (values[date]!=0){
+				sum+=values[date];
+			}
+			//one of the direct children has no value at the given date 
+			else{
+				return 0;
+			}
+		}
+		return sum;
+	}
+	public static void main(String[] args) {
+		//String curDir=System.getProperty("user.dir");
+		ArrayList<String[]> zonesList = readCsvFile("Supply zones.csv");
+		parseZones(zonesList);
+		ArrayList<String[]> valuesList = readCsvFile("Supply values.csv");
+		parseValues(valuesList);
+		String outputFile = "Zones output.csv";
+		try
+		{
+		    FileWriter writer = new FileWriter(outputFile);
+		    writer.append("zone name,date,value,type");
+		    writer.append('\n');
+			//print for each zone supply its values per date
+		    String type="";
+		    String value="";
+		    boolean appendLine;
+			for (String zone : allZonesValues.keySet()) {
+			    int[] values = allZonesValues.get(zone);
+				for (int dateNum=1; dateNum<8; dateNum++) {
+					appendLine=false;
+					 if (values[dateNum]!=0){
+						 System.out.println(" zone name:" + zone+", date:"+dates[dateNum]+", value:"+values[dateNum]+", actual");
+						 type = "actual";
+						 value = "" + values[dateNum];
+						 appendLine=true;
+				    }
+			    	else{
+			    		//calculate values sum of zone children
+			    		//sum zone direct children values for a certain date 
+			    		if (parentChildren.containsKey(zone)){
+			    			ArrayList<String> childrens = parentChildren.get(zone);
+				    		int childrenVal = getChildrenValue(childrens, dateNum);
+				    		if (childrenVal!=0){
+				    			System.out.println(" zone name:" + zone+", date:"+dates[dateNum]+", value:"+childrenVal+", type:aggregated");
+							    type = "aggregated";
+								value = "" + childrenVal;
+								appendLine=true;
+				    		}
+			    		}
+			    	}
+					 if (appendLine){
+					    writer.append(zone);
+					    writer.append(',');
+					    writer.append(dates[dateNum]);
+					    writer.append(',');
+					    writer.append(value);
+					    writer.append(',');
+					    writer.append(type);
+					    writer.append('\n');
+					 }
+				}
+			}
+		    writer.flush();
+		    writer.close();
+		}
+		catch(IOException e)
+		{
+		     e.printStackTrace();
+		} 
+    return;
+	}
+}
